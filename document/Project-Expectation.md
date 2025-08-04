@@ -1,3 +1,5 @@
+**AutomateOS lets you build a "bridge" for the apps you use (like Notion, Google Sheets, Discord, APIs) to talk to each other and automate tasks you ask them to do, all while you own and control them 100%.**
+
 ### **Key Implementation Details: The AutomateOS Engine**
 
 This document outlines the core concepts and required qualities of the `AutomateOS` Engine.
