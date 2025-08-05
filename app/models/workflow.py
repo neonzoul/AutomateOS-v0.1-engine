@@ -6,7 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel, Column, JSON
 if TYPE_CHECKING:
     from .user import User
 
-
+# == Initailize [Declare]== | Declarative Style for SQLModel
 class Workflow(SQLModel, table=True):
     """
     Workflow model representing an automation workflow in the system.
@@ -35,7 +35,7 @@ class Workflow(SQLModel, table=True):
     # Relationship to WorkflowRun model (one workflow to many runs)
     runs: List["WorkflowRun"] = Relationship(back_populates="workflow")
 
-
+# == Initailize [Declare]== | Declarative Style for SQLModel
 class WorkflowRun(SQLModel, table=True):
     """
     WorkflowRun model representing a single execution instance of a workflow.

@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from .workflow import Workflow
 
 
+# == Initailize [Declare]== | Declarative Style for SQLModel
 class User(SQLModel, table=True):
     """
     User model representing a user in the automation system.
@@ -15,8 +16,7 @@ class User(SQLModel, table=True):
     Each user can have multiple workflows associated with their account.
     Authentication is handled through email and hashed password.
     """
-    
-    # Primary key for the user table
+    # -- DECLARING User table model -- | fields and properties
     id: int | None = Field(default=None, primary_key=True)
     
     # User's email address - must be unique and is indexed for fast lookups
@@ -27,6 +27,5 @@ class User(SQLModel, table=True):
     # Never store plain text passwords - always use proper hashing
     hashed_password: str
 
-    # Relationship to Workflow model (one user to many workflows)
-    # This allows easy access to all workflows belonging to a user
+    # -- DECLARING - Relationship to Workflow model -- (one user to many workflows)
     workflows: List["Workflow"] = Relationship(back_populates="user")
