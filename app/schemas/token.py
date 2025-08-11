@@ -1,0 +1,3 @@
+# Temp Mockup
+def TokenPayload (token: str) -> str:
+    ...
