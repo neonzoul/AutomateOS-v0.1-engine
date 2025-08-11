@@ -12,6 +12,7 @@ idna==3.10
 passlib[bcrypt]
 pydantic==2.11.7
 pydantic_core==2.33.2
+pydantic-settings
 python-dotenv==1.1.1
 python-jose[cryptography]
 PyYAML==6.0.2
