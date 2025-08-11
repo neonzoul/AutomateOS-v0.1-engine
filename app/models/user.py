@@ -23,9 +23,12 @@ class User(SQLModel, table=True):
     # Used as the primary identifier for authentication
     email: str = Field(unique=True, index=True)
     
+    name: str | None = Field(default=None)
+    
     # Hashed password for authentication
     # Never store plain text passwords - always use proper hashing
     hashed_password: str
+
 
     # -- DECLARING - Relationship to Workflow model -- (one user to many workflows)
     workflows: List["Workflow"] = Relationship(back_populates="user")
