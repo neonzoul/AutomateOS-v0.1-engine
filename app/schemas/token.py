@@ -4,7 +4,7 @@ from sqlmodel import SQLModel
 # The API response when a user logs in.
 # [[ shape of the JSON ]]
 class Token(SQLModel):
-    asscess_token: str
+    access_token: str
     token_type: str = "bearer"
 
 # Payload of the Token.
