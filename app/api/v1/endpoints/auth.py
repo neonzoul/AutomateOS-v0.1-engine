@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
 # Import dependencies, schemas, models, security functions.
@@ -19,8 +20,6 @@ router = APIRouter(tags=["Authentication"])
 
 
 # === Register Endpoint ===
-
-
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 # Create a new user.
 #  [[ Using async allows the function to handle more requests efficiently, ]]
@@ -57,11 +56,11 @@ async def register_user(
 async def login_for_access_token(
     *,
     session: Session = Depends(get_session),
-    user_in: UserCreate # [[ Can reuse UserCreate schema for login credentails ]]
+    form_data: OAuth2PasswordRequestForm = Depends() # [[ Can reuse UserCreate schema for login credentails ]]
 ):
-    user = session.exec(select(User).where(User.email == user_in.email)).first()
+    user = session.exec(select(User).where(User.email == form_data.username)).first()
 
-    if not user or not verify_password(user_in.password, user.hashed_password):
+    if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
