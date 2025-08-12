@@ -19,9 +19,13 @@ router = APIRouter(tags=["Authentication"])
 
 
 # === Register Endpoint ===
+
+
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 # Create a new user.
-def register_user(
+#  [[ Using async allows the function to handle more requests efficiently, ]]
+#  [[ especially when performing I/O-bound operations like database access, without blocking the event loop. ]]
+async def register_user(
     *,
     session: Session = Depends(get_session),
     user_in: UserCreate
@@ -50,7 +54,7 @@ def register_user(
 @router.post("/login", response_model=Token)
 
 # -- Get Access Token after authentication. -- 
-def login_for_access_token(
+async def login_for_access_token(
     *,
     session: Session = Depends(get_session),
     user_in: UserCreate # [[ Can reuse UserCreate schema for login credentails ]]
