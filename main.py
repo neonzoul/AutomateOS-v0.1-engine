@@ -5,7 +5,6 @@ from fastapi import FastAPI
 
 from app.db.session import create_db_and_tables
 from app.api.v1.endpoints import auth
-from app.api.v1 import workflows # ??  for test API deps
 
 
 # === Lifespan (startup/shutdown) ===
@@ -30,9 +29,6 @@ app = FastAPI(
 	version="0.2.0",
     lifespan=lifespan
 )
-
-# *** endpoint for test ***
-app.include_router(workflows.router, prefix="/api/v1", tags=["Test Endpont"])
 
 # === Router Autentication ===
 # [[ Include authentication router with API versioning ]]
