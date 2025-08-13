@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.db.session import create_db_and_tables
-from app.api.v1.endpoints import auth
+from app.api.v1.endpoints import auth, workflows
 
 
 # === Lifespan (startup/shutdown) ===
@@ -30,12 +30,18 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# === Router Autentication ===
-# [[ Include authentication router with API versioning ]]
-# [[ All auth endpoints will be available under /api/v1/* prefix ]]
-app.include_router(auth.router, prefix="/api/v1", tags=["Authentication"])
-
 # === Root Endpoint ===
 @app.get("/")
 def read_root():
     return {"message": "AutomateOS Engine is running"}
+
+# === Endpoints Router ===
+
+# -- Autentication --
+app.include_router(auth.router, prefix="/api/v1", tags=["Authentication"])
+# [[ Include authentication router with API versioning ]]
+# [[ All auth endpoints will be available under /api/v1/* prefix ]]
+
+# -- Workflows --
+app.include_router(workflows.router, prefix="/api/v1/workflows", tags=["Workflows"])
+

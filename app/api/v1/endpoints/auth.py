@@ -16,7 +16,7 @@ from app.schemas.user import UserCreate, UserRead
 from app.schemas.token import Token
 
 # Authentication Router.
-router = APIRouter(tags=["Authentication"])
+router = APIRouter()
 
 
 # === Register Endpoint ===
