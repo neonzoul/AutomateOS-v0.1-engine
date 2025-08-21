@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.db.session import create_db_and_tables
-from app.api.v1.endpoints import auth, workflows
+from app.api.v1.endpoints import auth, workflows, webhooks
 
 
 # === Lifespan (startup/shutdown) ===
@@ -44,4 +44,7 @@ app.include_router(auth.router, prefix="/api/v1", tags=["Authentication"])
 
 # -- Workflows --
 app.include_router(workflows.router, prefix="/api/v1/workflows", tags=["Workflows"])
+
+# -- Webhooks --
+app.include_router(webhooks.router, prefix="/api/v1/webhooks", tags=["Webhooks"])
 
