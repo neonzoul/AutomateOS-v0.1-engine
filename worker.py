@@ -1,15 +1,19 @@
-from fastapi import FastAPI
+# RQ Worker Entrypoint 
+# [[to runs the RQ worker process which listens to the Redis queue, picks up jobs on Background]]
+import redis
+from redis import Redis
+from rq import Connection, Worker, Queue # type: ignore [[ ignore library's type hints ]]
 
-# initialized opject that can call.
-# object is what FastAPI uses to define your API endpoints and configurations 
-workflow = FastAPI()
+# [[ Queue the worker will listen to. 'default' is the standard one. ]]
+listen = ['default']
 
-# [[ The use of decorators in FastAPI (like @app.get("/")) ]]
-# [[ to define API endpoints is an example of the project's declarative and data-oriented programming style ]]
-@workflow.get('/')
+# Redis connection details.
+redis_url = 'redis://localhost:6379'
+conn: Redis = redis.from_url(redis_url) # type: ignore [[ ignore type hints warning for library ]]
 
-def read_workflow():
-    return {
-            "name":"Alice",
-            "message": "Hi, I'm worker.",
-            }
+if __name__ == '__main__':
+    with Connection(conn):
+        # Create a new worker that listens on the specified queues
+        worker = Worker(map(Queue, listen))
+        print(f"Worker starting... Listening on queue: {', '.join(listen)}")
+        worker.work()
