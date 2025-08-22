@@ -1,48 +1,63 @@
 """The Orchestrator that dynamically loads and runs the nodes."""
 from __future__ import annotations
 
-import importlib # [[to achieve dynamuc loading.]]
-from typing import Any, Dict
+from importlib import import_module
+from typing import Any, Dict, List, TypedDict
+
+from app.engine.nodes.base import BaseNode
+
+
+class Step(TypedDict, total=False):
+    type: str
+    config: Dict[str, Any]
+
+
+def _class_name_from_node_type(node_type: str) -> str:
+    # http_request_node -> HttpRequestNode
+    return "".join(part.capitalize() for part in node_type.split("_"))
+
 
 def run_workflow(workflow_definition: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Dynamically loads and executes the nodes defined in a workflow.
+    Dynamically load and execute nodes as defined in the workflow.
+    Returns a state dict keyed by node type.
     """
-    print(f"Orchestrator: Starting workflow run...")
+    state: Dict[str, Any] = {}
+    steps: List[Step] = workflow_definition.get("steps", []) or []
 
-    # This variable will hold the output of one node to be the input of the next.
-    current_data: Dict[str, Any] = {}
-
-    # Loop through each step defined in the workflow
-    for step in workflow_definition.get("steps", []):
+    for idx, step in enumerate(steps, start=1):
         node_type = step.get("type")
-        node_config = step.get("config", {})
+        if not isinstance(node_type, str) or not node_type:
+            raise ValueError(f"Step {idx}: 'type' is required")
 
-        if not node_type:
-            continue # or raise an error
+        module_path = f"app.engine.nodes.{node_type}"
+        class_name = _class_name_from_node_type(node_type)
 
+        # Import module
         try:
-            # 1. Dynamically import the node's module
-            module_path = f'app.engine.nodes.{node_type}'
-            node_module = importlib.import_module(module_path)
+            module = import_module(module_path)
+        except Exception as e:
+            raise ImportError(f"Step {idx}: cannot import module '{module_path}': {e}") from e
 
-            # 2. Find the class within the module
-            # Use a convention: The class is CamelCase version of the file name.
-            #[[ e.g., http_request_node.py -> HttpRequestNode ]]
-            class_name = "".join(word.capitalize() for word in node_type.split("_"))
-            NodeClass = getattr(node_module, class_name)
+        # Resolve class
+        try:
+            NodeClass = getattr(module, class_name)
+        except AttributeError as e:
+            raise ImportError(f"Step {idx}: class '{class_name}' not found in '{module_path}'") from e
 
-            # 3. Create an instance & execute it
-            node_instance = NodeClass(config=node_config)
-            current_data = node_instance.execute(input_data=current_data)
+        # Validate base class
+        if not issubclass(NodeClass, BaseNode):
+            raise TypeError(f"Step {idx}: '{class_name}' must subclass BaseNode")
 
-            print(f"Orchestrator: Successfully executed node '{node_type}'.")
-        
-        except (ImportError, AttributeError) as e:
-            print(f"Orchestrator: Error loading or running node '{node_type}': {e}")
-            raise
+        # Instantiate and execute
+        node = NodeClass(config=step.get("config", {}))
+        try:
+            output: Dict[str, Any] = node.execute(input_data=state)
+        except Exception as e:
+            raise RuntimeError(f"Step {idx} ({node_type}) failed: {e}") from e
 
-    print(f"Orchestrator: Workflow run finished.")
-    return current_data
-            
+        state[node_type] = output
+
+    return state
+
 
