@@ -2,24 +2,14 @@ from __future__ import annotations
 
 import time
 import json
-from pathlib import Path
-from typing import Optional, Any, Dict
+from typing import Any, Dict
 import requests
 
 API = "http://127.0.0.1:8000"
-ENV_PATH = Path(__file__).resolve().parents[1] / ".env"
 
-
-def get_env_var(name: str) -> Optional[str]:
-    if not ENV_PATH.exists():
-        return None
-    for line in ENV_PATH.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.split("=")[0] == name:
-            return line.split("=", 1)[1].strip()
-    return None
+# REQUIRED: Provide your Discord webhook URL directly here.
+# Example: DISCORD_WEBHOOK = "https://discord.com/api/webhooks/xxxxx/yyyyy"
+DISCORD_WEBHOOK: str = ""
 
 
 def login(email: str, password: str) -> str:
@@ -83,9 +73,14 @@ def poll_until_finished(token: str, wf_id: int, timeout_s: int = 30) -> str:
 
 
 def main() -> None:
-    discord_url = get_env_var("DISCORD_NOTIFIER_URL")
+    # Require the webhook to be provided directly in this file
+    discord_url = DISCORD_WEBHOOK.strip()
     if not discord_url:
-        raise RuntimeError("DISCORD_NOTIFIER_URL not found in .env")
+        raise RuntimeError(
+            "Set DISCORD_WEBHOOK in tests/stripe_discord_bridge_test.py to your Discord webhook URL."
+        )
+    if not discord_url.startswith("https://discord.com/api/webhooks/"):
+        raise RuntimeError("DISCORD_WEBHOOK doesn't look like a Discord webhook URL.")
 
     token = login("admin@example.com", "password1234")
     wf_id = create_workflow(token, discord_url)
