@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
     
 # === FastAPI Application Setup ===
 app = FastAPI(
-    title="AutomateOS", 
+    title="AutomateOS (Engine)", 
 	version="0.2.0",
     lifespan=lifespan
 )
