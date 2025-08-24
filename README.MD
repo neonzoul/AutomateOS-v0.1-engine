@@ -219,19 +219,19 @@ automateos/
 
 ### \#\# Key Directory Explanations
 
--   **`automateos/` (Root):** Contains Docker files, environment configurations, and entry points (`main.py`, `worker.py`). This keeps your runtime configuration separate from your application logic.
+-   **`automateos/` (Root):** Contains Docker files, environment configurations, and entry points (`main.py`, `worker.py`). This keeps runtime configuration separate from application logic.
 
--   **`app/`:** The main Python package for your application source code.
+-   **`app/`:** The main Python package for application source code.
 
--   **`app/api/`:** Holds all your API versions and endpoints. Starting with a `v1/` sub-directory is a best practice that makes future API updates much easier.
+-   **`app/api/`:** Holds all API versions and endpoints. Starting with a `v1/` sub-directory that makes future API updates much easier.
 
 -   **`app/core/`:** For application-wide logic like loading configuration from `.env` files (`config.py`) and handling security tasks like password hashing and JWT management (`security.py`).
 
--   **`app/engine/`:** This is the heart of your automation logic. It's used by `worker.py` but not directly by the API.
+-   **`app/engine/`:** This is the heart of automation logic. It's used by `worker.py` but not directly by the API.
 
     -   `orchestrator.py`: The main file that contains the logic to run a workflow step-by-step.
     -   `nodes/`: Your **plugin directory**. You simply add a new Python file here to create a new node, and the engine will dynamically load it.
 
--   **`app/models/`:** Contains your SQLModel classes, which define your database table structures.
+-   **`app/models/`:** Contains SQLModel classes, which define database table structures.
 
--   **`app/schemas/`:** Contains your Pydantic classes. These define the shape of data for your API (e.g., what the request body for creating a user should look like). This separation from `models` allows you to expose different data in your API than what you store in your database.
+-   **`app/schemas/`:** Contains Pydantic classes. These define the shape of data for API. This separation from `models` allows you to expose different data in your API than what you store in your database.
