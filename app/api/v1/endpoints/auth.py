@@ -20,7 +20,13 @@ router = APIRouter()
 
 
 # === Register Endpoint ===
-@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=UserRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Register a new user",
+    description="Create a new user with a unique email and hashed password.",
+)
 # Create a new user.
 #  [[ Using async allows the function to handle more requests efficiently, ]]
 #  [[ especially when performing I/O-bound operations like database access, without blocking the event loop. ]]
@@ -50,7 +56,12 @@ async def register_user(
     return db_user
 
 # === Login Endpoint ===
-@router.post("/login", response_model=Token)
+@router.post(
+    "/login",
+    response_model=Token,
+    summary="Obtain an access token",
+    description="Authenticate with username (email) and password to receive a Bearer JWT token.",
+)
 
 # -- Get Access Token after authentication. -- 
 async def login_for_access_token(

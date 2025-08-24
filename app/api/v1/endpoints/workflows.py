@@ -15,7 +15,12 @@ from app.schemas.workflow import WorkflowCreate, WorkflowRead, WorkflowRunRead
 router = APIRouter()
 
 # === Create Workflow ===
-@router.post("/", response_model=WorkflowRead)
+@router.post(
+    "/",
+    response_model=WorkflowRead,
+    summary="Create a new workflow",
+    description="Create and persist a workflow definition owned by the current user.",
+)
 async def create_workflow(
     *,
     session: Session = Depends(get_session),
@@ -33,7 +38,12 @@ async def create_workflow(
 # === Read Workflow ===
 
 # --- Read List---
-@router.get("/", response_model=List[WorkflowRead]) # [[ "/" == "/api/v1/workflows/" | Type List for return multiple objects.(workflows)]]
+@router.get(
+    "/",
+    response_model=List[WorkflowRead],
+    summary="List workflows",
+    description="Return all workflows belonging to the current user.",
+) # [[ "/" == "/api/v1/workflows/" | Type List for return multiple objects.(workflows)]]
 async def read_workflow(
     *,
     session: Session = Depends(get_session),
@@ -46,7 +56,12 @@ async def read_workflow(
     return [WorkflowRead.model_validate(w) for w in workflows]  # [[ Explicitly convert each DB model to its corresponding Pydantic schema. ]]
 
 # --- Read Single by ID ---
-@router.get("/{workflow_id}", response_model=WorkflowRead)
+@router.get(
+    "/{workflow_id}",
+    response_model=WorkflowRead,
+    summary="Get a workflow by ID",
+    description="Retrieve a workflow by its ID if it belongs to the current user.",
+)
 async def read_single_workflow(
     *,
     session: Session = Depends(get_session),
@@ -68,7 +83,12 @@ async def read_single_workflow(
 
 
 # --- History: list runs for a workflow ---
-@router.get("/{workflow_id}/runs", response_model=List[WorkflowRunRead])
+@router.get(
+    "/{workflow_id}/runs",
+    response_model=List[WorkflowRunRead],
+    summary="List workflow runs",
+    description="Return recent execution runs for a workflow (newest first).",
+)
 async def read_workflow_runs(
     *,
     session: Session = Depends(get_session),
@@ -118,7 +138,11 @@ async def read_workflow_runs(
 
 
 # --- History: metadata (total count) ---
-@router.get("/{workflow_id}/runs/meta")
+@router.get(
+    "/{workflow_id}/runs/meta",
+    summary="Runs metadata (total count)",
+    description="Return total count of runs for a workflow (filterable by status).",
+)
 async def read_workflow_runs_meta(
     *,
     session: Session = Depends(get_session),
@@ -145,7 +169,11 @@ async def read_workflow_runs_meta(
 
 
 # --- History: HEAD for total count header ---
-@router.head("/{workflow_id}/runs")
+@router.head(
+    "/{workflow_id}/runs",
+    summary="HEAD: X-Total-Count for runs",
+    description="HEAD endpoint that sets X-Total-Count header for number of runs.",
+)
 async def head_workflow_runs(
     *,
     session: Session = Depends(get_session),

@@ -6,7 +6,12 @@ from app.core.queue import q
 
 router = APIRouter()
 
-@router.post("/{workflow_id}", status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/{workflow_id}",
+    status_code=status.HTTP_202_ACCEPTED,
+    summary="Trigger a workflow asynchronously",
+    description="Queue a background job to execute the workflow identified by workflow_id.",
+)
 
 # --- Recieves Webhook request Endpoint --- 
 async def trigger_workflow(workflow_id: int):
