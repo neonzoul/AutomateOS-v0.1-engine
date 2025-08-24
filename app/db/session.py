@@ -6,12 +6,16 @@ from sqlmodel import create_engine, Session, SQLModel
 from sqlalchemy import inspect as sa_inspect, text
 from typing import Any
 
-# === Defines Database File ===
-# DB Path/name.db
+"""
+Database URL resolution:
+- Use env var DATABASE_URL if provided (e.g., postgresql+psycopg2://user:pass@host:5432/db)
+- Otherwise, default to a local SQLite database file.
+"""
+# DB Path/name.db (default for local dev)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 db_file_path = os.path.join(project_root, "database.db")
 
-DATABASE_URL = f'sqlite:///{db_file_path}'  # ?Replace with actual database URL in a .env file later
+DATABASE_URL = os.getenv('DATABASE_URL', f'sqlite:///{db_file_path}')
 
 # === Create Engine ===
 engine = create_engine(DATABASE_URL, echo=True)
